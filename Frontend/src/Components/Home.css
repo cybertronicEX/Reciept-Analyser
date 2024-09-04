@@ -1,0 +1,86 @@
+.home-container {
+    font-family: Arial, sans-serif;
+    background-color: rgb(37, 37, 37);
+    padding: 20px;
+    position: fixed;
+    height: 100vh;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+h1 {
+    color: #ffffff;
+}
+
+.user-welcome {
+    color: #dfdddd;
+    margin-top: 10px;
+}
+
+.content-section {
+    height: 50vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    align-content: space-between;
+}
+
+.project-description {
+    width: 45%;
+}
+
+
+
+.project-description {
+    background-color: #3b3b3b;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.project-description h2 {
+    color: #1e7eb6;
+    padding-bottom: 10px;
+}
+
+.project-description p {
+    color: #ffffff;
+    margin-bottom: 15px;
+}
+
+
+.insert-receipt-button {
+    background-color: #0F6292; 
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.insert-receipt-button:hover {
+    background-color: #0c364e;
+}
+
+.insert-receipt-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.5);
+}
+
+@media (max-width: 768px) {
+    .content-section {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .project-description {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+}

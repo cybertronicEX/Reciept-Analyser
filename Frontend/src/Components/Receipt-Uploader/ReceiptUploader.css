@@ -1,0 +1,54 @@
+/* ReceiptUploader.css */
+
+.upload-container {
+    text-align: center;
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.dropzone {
+    border: 2px dashed #28a745; /* Green shade for the border */
+    border-radius: 10px;
+    padding: 40px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.dropzone p {
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.dropzone.active {
+    background-color: #e9f5ee; /* Slight green tint on active drag */
+    border-color: #218838; /* Darker green on active drag */
+}
+
+.instructions {
+    margin-top: 20px;
+    font-size: 1rem;
+    color: #555;
+}
+
+.preview-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.image-preview {
+    margin: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px;
+    background-color: #fff;
+}
+
+.image-preview img {
+    max-width: 100%;
+    max-height: auto;
+    border-radius: 5px;
+}

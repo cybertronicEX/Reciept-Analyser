@@ -1,0 +1,75 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: rgb(77,88,110);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+*{ 
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  /* font-family: 'Lato',sans-serif; */
+}
+
+
+/* .DataExtraction, .Home, .FashionProfiler{
+  display: flex;
+  height: 0vh;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+} */
+
+.header{
+  display: flex;
+  /* min-width: 3000px; */
+  position: fixed;
+  z-index: 1;
+  width: 100vw;
+}
+
+.Rname1{
+  /* height: 40px; */
+  color: white;
+  font-size: 30px;
+  text-align: center;
+  font-family: Georgia, 'Times New Roman', Times, serif, cursive ;
+  font-style: italic;
+  width: 100%;
+  background-color: rgb(35, 35, 35);
+
+}
