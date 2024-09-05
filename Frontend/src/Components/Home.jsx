@@ -5,7 +5,7 @@ const Home = () => {
     const navigate = useNavigate();
 
     const goToInsertReceipt = () => {
-        navigate('/insert-receipt'); // Update this path according to your routing setup
+        navigate('/ReceiptUploader'); // Update this path according to your routing setup
     };
 
     return (

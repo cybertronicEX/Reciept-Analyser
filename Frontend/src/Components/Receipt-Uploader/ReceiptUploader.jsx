@@ -14,6 +14,16 @@ const UploadReceipt = () => {
         setUploadedImages(filesWithPreview);
     }, []);
 
+    const handleCancel = () => {
+        // Clear the uploaded images
+        setUploadedImages([]);
+    };
+
+    const handleSubmit = () => {
+        // Handle submit action (like uploading to server)
+        console.log("Submit clicked!", uploadedImages);
+    };
+
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, accept: 'image/*' });
 
     return (
@@ -35,6 +45,10 @@ const UploadReceipt = () => {
                             <p>Drag 'n' drop some files here, or click to select files</p>
                     )
                 }
+            </div>
+            <div className="button-container">
+                <button className="cancel-btn" onClick={handleCancel}>Cancel</button>
+                <button className="submit-btn" onClick={handleSubmit}>Submit</button>
             </div>
             <div className="instructions">
                 <p>You can upload images of your receipts here. Simply drag and drop them into the box or click to browse your files.</p>
