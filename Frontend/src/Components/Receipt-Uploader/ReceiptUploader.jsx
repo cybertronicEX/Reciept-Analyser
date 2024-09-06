@@ -6,7 +6,7 @@ const UploadReceipt = () => {
     const [uploadedImages, setUploadedImages] = useState([]);
 
     const onDrop = useCallback((acceptedFiles) => {
-        const filesWithPreview = acceptedFiles.map(file => 
+        const filesWithPreview = acceptedFiles.map(file =>
             Object.assign(file, {
                 preview: URL.createObjectURL(file)
             })
@@ -40,16 +40,18 @@ const UploadReceipt = () => {
                             ))}
                         </div>
                     ) : (
-                        isDragActive ? 
-                            <p>Drop the files here...</p> : 
+                        isDragActive ?
+                            <p>Drop the files here...</p> :
                             <p>Drag 'n' drop some files here, or click to select files</p>
                     )
                 }
             </div>
-            <div className="button-container">
-                <button className="cancel-btn" onClick={handleCancel}>Cancel</button>
-                <button className="submit-btn" onClick={handleSubmit}>Submit</button>
-            </div>
+            {uploadedImages.length > 0 && (
+                <div className="button-container">
+                    <button className="cancel-btn" onClick={handleCancel}>Cancel</button>
+                    <button className="submit-btn" onClick={handleSubmit}>Submit</button>
+                </div>
+            )}
             <div className="instructions">
                 <p>You can upload images of your receipts here. Simply drag and drop them into the box or click to browse your files.</p>
             </div>

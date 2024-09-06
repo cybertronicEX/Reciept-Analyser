@@ -4,14 +4,17 @@ import './ChargesTable.css';
 const ChargesTable = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [activeFilter, setActiveFilter] = useState('');
-    const [filterOption, setFilterOption] = useState('');
     const [filterValue, setFilterValue] = useState('');
+    const [showFilters, setShowFilters] = useState(false); // Toggle filter visibility
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10; // Number of rows per page
 
     // Sample data for the table
     const data = [
         { charges: "Service Fee", amount: 100, category: "Services", payee: "John Doe", payment_type: "Credit Card", date: "2024-09-05", time: "10:30 AM" },
         { charges: "Product Purchase", amount: 250, category: "Products", payee: "Jane Smith", payment_type: "Cash", date: "2024-09-05", time: "12:45 PM" },
         { charges: "Consultation", amount: 300, category: "Consulting", payee: "Michael Johnson", payment_type: "Debit Card", date: "2024-09-04", time: "03:00 PM" },
+        { charges: "Subscription", amount: 400, category: "Services", payee: "Emma Wilson", payment_type: "Credit Card", date: "2024-09-03", time: "02:00 PM" },
     ];
 
     // Handle global search
@@ -19,10 +22,10 @@ const ChargesTable = () => {
         setSearchTerm(event.target.value.toLowerCase());
     };
 
-    // Handle filter selection
-    const handleFilterOptionChange = (event) => {
-        setFilterOption(event.target.value);
-        setFilterValue(''); // Reset the value when the option changes
+    // Handle filter selection (checkbox toggle)
+    const handleFilterCheckboxChange = (filter) => {
+        setActiveFilter(filter === activeFilter ? '' : filter);
+        setFilterValue('');
     };
 
     // Handle column filter
@@ -43,34 +46,17 @@ const ChargesTable = () => {
                 case 'charges':
                 case 'category':
                 case 'payee':
-                    if (filterOption === 'contains') {
-                        matchesFilter = row[activeFilter].toLowerCase().includes(filterValue);
-                    } else if (filterOption === 'startsWith') {
-                        matchesFilter = row[activeFilter].toLowerCase().startsWith(filterValue);
-                    } else if (filterOption === 'endsWith') {
-                        matchesFilter = row[activeFilter].toLowerCase().endsWith(filterValue);
-                    }
+                    matchesFilter = row[activeFilter].toLowerCase().includes(filterValue);
                     break;
-
                 case 'amount':
-                    const value = parseFloat(filterValue);
-                    if (filterOption === 'greaterThan') {
-                        matchesFilter = row[activeFilter] > value;
-                    } else if (filterOption === 'lessThan') {
-                        matchesFilter = row[activeFilter] < value;
-                    } else if (filterOption === 'equals') {
-                        matchesFilter = row[activeFilter] === value;
-                    }
+                    matchesFilter = parseFloat(row[activeFilter]) > parseFloat(filterValue);
                     break;
-
                 case 'payment_type':
                     matchesFilter = row[activeFilter] === filterValue;
                     break;
-
                 case 'date':
-                    matchesFilter = row[activeFilter] === filterValue; // Implement advanced date filtering logic if needed
+                    matchesFilter = row[activeFilter] === filterValue;
                     break;
-
                 default:
                     break;
             }
@@ -79,41 +65,40 @@ const ChargesTable = () => {
         return matchesGlobalSearch && matchesFilter;
     });
 
-    // Different filter input depending on the active filter
+    // Pagination Logic
+    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const paginatedData = filteredData.slice(startIndex, startIndex + itemsPerPage);
+
+    // Navigate to the next page
+    const handleNextPage = () => {
+        setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages));
+    };
+
+    // Navigate to the previous page
+    const handlePreviousPage = () => {
+        setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
+    };
+
+    // Different filter input based on active filter
     const renderFilterInput = () => {
-        if (activeFilter === 'amount') {
+        if (['charges', 'category', 'payee'].includes(activeFilter)) {
             return (
-                <>
-                    <select value={filterOption} onChange={handleFilterOptionChange}>
-                        <option value="">Select Option</option>
-                        <option value="greaterThan">Greater than</option>
-                        <option value="lessThan">Less than</option>
-                        <option value="equals">Equal to</option>
-                    </select>
-                    <input
-                        type="number"
-                        placeholder="Enter value"
-                        value={filterValue}
-                        onChange={handleFilterValueChange}
-                    />
-                </>
+                <input
+                    type="text"
+                    placeholder={`Enter ${activeFilter}`}
+                    value={filterValue}
+                    onChange={handleFilterValueChange}
+                />
             );
-        } else if (['charges', 'category', 'payee'].includes(activeFilter)) {
+        } else if (activeFilter === 'amount') {
             return (
-                <>
-                    <select value={filterOption} onChange={handleFilterOptionChange}>
-                        <option value="">Select Option</option>
-                        <option value="contains">Contains</option>
-                        <option value="startsWith">Starts with</option>
-                        <option value="endsWith">Ends with</option>
-                    </select>
-                    <input
-                        type="text"
-                        placeholder="Enter text"
-                        value={filterValue}
-                        onChange={handleFilterValueChange}
-                    />
-                </>
+                <input
+                    type="number"
+                    placeholder="Enter amount"
+                    value={filterValue}
+                    onChange={handleFilterValueChange}
+                />
             );
         } else if (activeFilter === 'payment_type') {
             return (
@@ -138,7 +123,6 @@ const ChargesTable = () => {
     };
 
     return (
-
         <div className="table-container">
             <div className="table-component-container">
                 {/* Global Search */}
@@ -150,38 +134,68 @@ const ChargesTable = () => {
                         onChange={handleGlobalSearch}
                         className="global-search-input"
                     />
+                    <button onClick={() => setShowFilters(!showFilters)}>
+                        {showFilters ? 'Hide Filters' : 'Show Filters'}
+                    </button>
                 </div>
 
-                {/* Filter Dropdown */}
-                <div className="filter-container">
-                    <div className="filter-selection">
-                        <label>Filter</label>
-                        <select
-                            value={activeFilter}
-                            onChange={(e) => {
-                                setActiveFilter(e.target.value);
-                                setFilterOption('');
-                                setFilterValue('');
-                            }}
-                        >
-                            <option value="">...</option>
-                            <option value="charges">Charges</option>
-                            <option value="amount">Amount</option>
-                            <option value="category">Category</option>
-                            <option value="payee">Payee</option>
-                            <option value="payment_type">Payment Type</option>
-                            <option value="date">Date</option>
-                            <option value="time">Time</option>
-                        </select>
-                    </div>
-                    <hr></hr>
-                    {/* Show filter input based on selected column */}
-                    {activeFilter && (
-                        <div className="filter-input">
-                            {renderFilterInput()}
+                {/* Filter Options (conditionally rendered) */}
+                {showFilters && (
+                    <div className="filter-container">
+                        <div className="filter-selection">
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    checked={activeFilter === 'charges'}
+                                    onChange={() => handleFilterCheckboxChange('charges')}
+                                /> Charges
+                            </label>
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    checked={activeFilter === 'amount'}
+                                    onChange={() => handleFilterCheckboxChange('amount')}
+                                /> Amount
+                            </label>
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    checked={activeFilter === 'category'}
+                                    onChange={() => handleFilterCheckboxChange('category')}
+                                /> Category
+                            </label>
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    checked={activeFilter === 'payee'}
+                                    onChange={() => handleFilterCheckboxChange('payee')}
+                                /> Payee
+                            </label>
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    checked={activeFilter === 'payment_type'}
+                                    onChange={() => handleFilterCheckboxChange('payment_type')}
+                                /> Payment Type
+                            </label>
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    checked={activeFilter === 'date'}
+                                    onChange={() => handleFilterCheckboxChange('date')}
+                                /> Date
+                            </label>
                         </div>
-                    )}
-                </div>
+                        {/* Show filter input based on selected column */}
+                        {activeFilter && (
+                            <div className="filter-input">
+                                {renderFilterInput()}
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Charges Table */}
                 <table className="charges-table">
                     <thead>
                         <tr>
@@ -195,7 +209,7 @@ const ChargesTable = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredData.map((row, index) => (
+                        {paginatedData.map((row, index) => (
                             <tr key={index}>
                                 <td>{row.charges}</td>
                                 <td>{row.amount}</td>
@@ -208,6 +222,17 @@ const ChargesTable = () => {
                         ))}
                     </tbody>
                 </table>
+
+                {/* Pagination Controls */}
+                <div className="pagination-controls">
+                    <button onClick={handlePreviousPage} disabled={currentPage === 1}>
+                        Previous
+                    </button>
+                    <span>Page {currentPage} of {totalPages}</span>
+                    <button onClick={handleNextPage} disabled={currentPage === totalPages}>
+                        Next
+                    </button>
+                </div>
             </div>
         </div>
     );

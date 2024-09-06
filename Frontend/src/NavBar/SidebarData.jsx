@@ -24,6 +24,13 @@ export const SidebarData = [
         icon: <AiIcons.AiFillHome />,
         cName: 'nav-text'
     },
+
+    {
+        title: 'Data Visualizer',
+        path: '/DataVisualizer',
+        icon: <AiIcons.AiFillHome />,
+        cName: 'nav-text'
+    },
 // enter ur page routes here with titles and icons for it to display on nav bar
 // https://react-icons.github.io/react-icons/icons/fa/ in case need to change icons
   
