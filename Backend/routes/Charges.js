@@ -22,7 +22,8 @@ router.post('/', async (req, res) => {
         payee,
         payment_type,
         date,
-        time
+        time,
+        qty
     });
 
     try {

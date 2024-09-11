@@ -2,10 +2,13 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const chargesRoutes = require('./routes/charges');
+const aiapiRoutes = require('./routes/Aiapi');
 const categoryRoutes = require('./routes/Categories');
 
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+
 const app = express();
-const PORT = 5000;
+const PORT = 5001;
 
 // Middleware
 app.use(cors());
@@ -21,6 +24,9 @@ mongoose.connect('mongodb+srv://receiptAnalyzerAdmin:admin123@receiptanalyzer.31
 // Routes
 app.use('/api/charges', chargesRoutes);
 app.use('/api/categories', categoryRoutes);
+app.use('/api/ai', aiapiRoutes);
+
+
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
