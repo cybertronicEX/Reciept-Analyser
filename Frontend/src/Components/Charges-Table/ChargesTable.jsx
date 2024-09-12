@@ -67,7 +67,7 @@ const ChargesTable = () => {
                     matchesFilter = row[activeFilter].toLowerCase().includes(filterValue);
                     break;
                 case 'category':
-                    matchesFilter = row[activeFilter].toLowerCase() === filterValue.toLowerCase();
+                    matchesFilter = row[activeFilter] === filterValue;
                     break;
                 case 'amount':
                     matchesFilter = parseFloat(row[activeFilter]) > parseFloat(filterValue);
@@ -155,6 +155,7 @@ const ChargesTable = () => {
 
     return (
         <div className="table-container">
+            <h2 className='h2'>Charges Table</h2>
             <div className="table-component-container">
                 {/* Global Search */}
                 <div className="global-search">

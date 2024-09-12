@@ -1,28 +1,42 @@
-import React, { useState } from 'react';
-import { Line, Pie, Bar } from 'react-chartjs-2';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Line, Pie } from 'react-chartjs-2';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import 'chart.js/auto'; // Required for chart.js to work
-import './DataVisualizerPage.css'
+import './DataVisualizerPage.css';
+
 const DataVisualizationPage = () => {
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const today = new Date();
+    const [apiResponse, setApiResponse] = useState(null);
+    const [loadingRecommendation, setLoadingRecommendation] = useState(false); // New state for loading recommendation
 
-    // Dummy data (same structure as your table)
-    const dummyData = [
-        { charges: "Service Fee", amount: 100, category: "Services", payee: "John Doe", payment_type: "Credit Card", date: "2024-09-01", time: "10:30 AM" },
-        { charges: "Product Purchase", amount: 250, category: "Products", payee: "Jane Smith", payment_type: "Cash", date: "2024-09-02", time: "12:45 PM" },
-        { charges: "Consultation", amount: 300, category: "Consulting", payee: "Michael Johnson", payment_type: "Debit Card", date: "2024-09-03", time: "03:00 PM" },
-        { charges: "Maintenance Fee", amount: 150, category: "Maintenance", payee: "John Doe", payment_type: "Credit Card", date: "2024-09-05", time: "09:00 AM" },
-        { charges: "Product Purchase", amount: 200, category: "Products", payee: "Jane Smith", payment_type: "Cash", date: "2024-09-06", time: "11:30 AM" },
-        { charges: "Consultation", amount: 400, category: "Consulting", payee: "Michael Johnson", payment_type: "Debit Card", date: "2024-09-07", time: "02:00 PM" },
-    ];
 
-    // Filter the dummy data by date range
+    useEffect(() => {
+        // Fetch data from the backend API
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:5001/api/charges');
+                setData(response.data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    // Filter the data by date range
     const filterDataByDateRange = () => {
-        if (!startDate || !endDate) return dummyData;
+        if (!startDate || !endDate) return data;
 
-        return dummyData.filter((item) => {
+        return data.filter((item) => {
             const itemDate = new Date(item.date);
             return itemDate >= startDate && itemDate <= endDate;
         });
@@ -30,6 +44,26 @@ const DataVisualizationPage = () => {
 
     const filteredData = filterDataByDateRange();
 
+
+    // Function to call the API and get the result
+    const processFilteredData = async () => {
+        try {
+            setLoadingRecommendation(true); // Start loading
+
+            const response = await axios.post('http://localhost:5001/api/ai/process-data', { filteredData });
+
+            // Display response data
+            if (response && response.data) {
+                setApiResponse(response.data);
+            } else {
+                console.error('Unexpected response format');
+            }
+        } catch (error) {
+            console.error('Error processing data:', error);
+        } finally {
+            setLoadingRecommendation(false); // End loading
+        }
+    };
     // Prepare data for the Expenses Over Time chart
     const expensesData = {
         labels: filteredData.map((item) => item.date),
@@ -75,15 +109,7 @@ const DataVisualizationPage = () => {
     return (
         <div className="data-visualization-container">
             <h2>Data Visualization</h2>
-            <div className='suggestions'>
-            <h3>Suggestion....</h3>
-            <input
-                    type="text"
-                    value={'Maybe go slow on the boba tea.....'}
-                    disabled
-                
-                />
-            </div>
+
             <div className="date-range-picker">
                 <DatePicker
                     selected={startDate}
@@ -92,6 +118,7 @@ const DataVisualizationPage = () => {
                     startDate={startDate}
                     endDate={endDate}
                     placeholderText="Start Date"
+                    maxDate={today}
                 />
                 <DatePicker
                     selected={endDate}
@@ -100,23 +127,44 @@ const DataVisualizationPage = () => {
                     startDate={startDate}
                     endDate={endDate}
                     placeholderText="End Date"
-                    minDate={startDate}
+                    maxDate={today}
                 />
+                <button onClick={processFilteredData} disabled={!startDate || !endDate}>Generate Recommendation</button>
             </div>
-     
+            <div className='suggestions'>
+                {loadingRecommendation ? (
+                    <div className="loading-screen">
+                        <div className="spinner"></div>
+                        <p>Loading recommendation...</p>
+                    </div>
+                ) : (
+                    apiResponse && (
+                        <div className="api-response">
+                            <h3>Recommendation</h3>
+                            <pre>{JSON.stringify(apiResponse, null, 2)}</pre>
+                        </div>
+                    )
+                )}
+            </div>
+            {loading ? (
+                <>
+                    <div className="spinner"></div>
+                    <p>Loading data...</p>
+                </>
+            ) : (
+                <>
+                    <div className="chart-container">
+                        <h3>Expenses Over Time</h3>
+                        <Line data={expensesData} options={{ responsive: true }} />
+                    </div>
 
-            <div className="chart-container">
-                <h3>Expenses Over Time</h3>
-                <Line data={expensesData} options={{ responsive: true }} />
-            </div>
-
-            <div className="chart-container">
-                <h3>Repetitive Payments</h3>
-                <Pie data={repetitivePaymentsChartData} options={{ responsive: true }} />
-            </div>
+                    <div className="chart-container">
+                        <h3>Repetitive Payments</h3>
+                        <Pie data={repetitivePaymentsChartData} options={{ responsive: true }} />
+                    </div>
+                </>
+            )}
         </div>
-
-
     );
 };
 

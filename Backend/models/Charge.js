@@ -10,8 +10,7 @@ const chargeSchema = new mongoose.Schema({
     date: { type: String, required: false },
     time: { type: String, required: false },
     receipt_id: { type: String, required: false },
-    receipt_ref_no: { type: String, required: false },
-    qty: { type: Number, required: false }
+    receipt_ref_no: { type: String, required: false }
 });
 
 module.exports = mongoose.model('charges', chargeSchema);
