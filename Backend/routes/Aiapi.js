@@ -8,7 +8,9 @@ const router = express.Router();
 const API_KEY = 'AIzaSyDvlKC5Yjfrhjp8t-ECy0_0pMG8fl2hlyY';
 const genAI = new GoogleGenerativeAI(API_KEY);
 
-const upload = multer({ dest: 'uploads/' }); // Store uploaded files in 'uploads/' folder
+// Set up multer to store files in memory (as Buffer objects)
+const storage = multer.memoryStorage();  // Store files in memory instead of disk
+const upload = multer({ storage });  // Initialize multer with memory storage
 
 router.post('/upload', upload.array('images', 5), async (req, res) => {
     try {
@@ -23,7 +25,7 @@ router.post('/upload', upload.array('images', 5), async (req, res) => {
 
         // Loop through images, process them with Tesseract OCR
         for (let image of images) {
-            const ocrResult = await Tesseract.recognize(image.path, 'eng');
+            const ocrResult = await Tesseract.recognize(image.buffer, 'eng');
             extractedText += ocrResult.data.text + '\n';
         }
 
@@ -35,10 +37,18 @@ router.post('/upload', upload.array('images', 5), async (req, res) => {
         // Use the combined text as input for the Gemini model
         const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
         const result = await model.generateContent([combinedText]);
+        
+        // Log the response to check its structure
+        console.log('Gemini response:', result);
 
-        // Send the Gemini result back to the frontend
-        res.json(result.response.text());
+        // Parse and clean up the response
+        let responseText = result.response.text(); // Assuming this returns a string
+        responseText = responseText.replace(/```json/g, '').replace(/```/g, ''); // Remove markdown code blocks if present
 
+        // Attempt to parse the cleaned-up response text as JSON
+        const jsonResponse = JSON.parse(responseText);
+
+        res.json(jsonResponse); // Send the parsed JSON response to the frontend
     } catch (error) {
         console.error('Error processing images and text:', error);
         res.status(500).json({ error: 'Failed to process the images and text' });

@@ -23,6 +23,7 @@ const UploadReceipt = () => {
             "receipt_ref_no": String,
             "qty": number
             }
+            receipt_id should be a generated simple unique ID for the receipt.for one receipt there can only be 1 receipt_Id and receipt_ref_no should be the unique Id of the receipt given by the shop. it may be refered as 'No.','receipt','Inovice','ref', etc..
             Each billed item of the receipt should be added as one record. Additionally, qty should mean quantity of the item, category should be something like "grocery" or "utility" or something like that. If any of the information is not available, set it to null. Here is the receipt:
         `;
    
