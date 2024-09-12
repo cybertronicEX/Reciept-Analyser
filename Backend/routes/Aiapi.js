@@ -55,5 +55,42 @@ router.post('/upload', upload.array('images', 5), async (req, res) => {
     }
 });
 
+router.post('/process-data', async (req, res) => {
+    try {
+        const { filteredData } = req.body;
+
+        if (!filteredData) {
+            return res.status(400).json({ error: 'No filtered data provided' });
+        }
+
+        const prompt = 'Kindly go through the attached data and provide a recommendation to mitigate expenses.make it a single paragraph and less than 100 words.';
+        const textInput = `${prompt}\n\n${JSON.stringify(filteredData, null, 2)}`; // Convert to JSON string
+
+        // Use the Gemini model
+        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+        const result = await model.generateContent([textInput]);
+
+        // Log the raw response text for debugging
+        let responseText = result.response.text();
+        console.log('Raw response text:', responseText);
+
+        // Clean up the response text
+        // Remove any specific unwanted characters, markdown, or extra content
+        responseText = responseText
+            .replace(/```json/g, '')     // Remove starting ```json
+            .replace(/```/g, '')         // Remove ending ```
+            .replace(/\n{2,}/g, '\n')    // Replace multiple newlines with a single newline
+            .replace(/\s{2,}/g, ' ')     // Replace multiple spaces with a single space
+            .trim();                     // Trim any leading or trailing whitespace
+
+        // Send the cleaned response text
+        res.send(responseText);
+    } catch (error) {
+        console.error('Error processing data:', error);
+        res.status(500).json({ error: 'Failed to process the data' });
+    }
+});
+
+
 module.exports = router;
 

@@ -34,4 +34,20 @@ router.post('/', async (req, res) => {
     }
 });
 
+
+// POST multiple charges
+router.post('/bulk', async (req, res) => {
+    const charges = req.body; 
+
+    try {
+        if (!Array.isArray(charges)) {
+            return res.status(400).json({ message: 'Invalid input format. Expected an array of records.' });
+        }
+        const savedCharges = await Charge.insertMany(charges);
+        res.status(201).json(savedCharges);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
 module.exports = router;
