@@ -5,34 +5,21 @@
     padding: 20px;
     max-width: 600px;
     margin: 0 auto;
-    max-width: 100vh;
-   
 }
 
 .dropzone {
-    border: 2px dashed #0F6292; /* Green shade for the border */
+    border: 2px dashed #0F6292;
     border-radius: 10px;
     padding: 40px;
     background-color: #f9f9f9;
     cursor: pointer;
     transition: background-color 0.3s ease, border-color 0.3s ease;
-    margin-top: 20vh;
-}
-
-.dropzone p {
-    font-size: 1.2rem;
-    color: #333;
+    margin-top: 20px;
 }
 
 .dropzone.active {
-    background-color: #e9f5ee; /* Slight green tint on active drag */
-    border-color: #0c364e; /* Darker green on active drag */
-}
-
-.instructions {
-    margin-top: 20px;
-    font-size: 1rem;
-    color: #0F6292;
+    background-color: #e9f5ee;
+    border-color: #0c364e;
 }
 
 .preview-container {
@@ -42,22 +29,22 @@
     margin-top: 20px;
 }
 
-.image-preview {
-    margin: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 5px;
-    background-color: #0c364e;
-}
-
 .image-preview img {
-    max-width: 350px;  /* Set the maximum width for the preview */
-    max-height: 350px; /* Set the maximum height for the preview */
-    width: auto;       /* Ensure the aspect ratio is maintained */
-    height: auto;      /* Ensure the aspect ratio is maintained */
+    max-width: 150px;
+    max-height: 150px;
     border-radius: 5px;
 }
 
+.text-input {
+    width: 100%;
+    height: 100px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin-top: 20px;
+}
 
 .button-container {
     margin-top: 20px;
@@ -76,19 +63,55 @@
 }
 
 .cancel-btn {
-    background-color: #727272; /* Red for cancel */
+    background-color: #727272;
     color: white;
-}
-
-.cancel-btn:hover {
-    background-color: #c9302c;
 }
 
 .submit-btn {
-    background-color: #0F6292; /* Green for submit */
+    background-color: #0F6292;
     color: white;
 }
 
-.submit-btn:hover {
-    background-color: #0c364e;
+.submit-btn:disabled {
+    background-color: #aaaaaa;
+}
+
+.progress-bar {
+    width: 100%;
+    background-color: #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+.progress {
+    width: 0;
+    height: 10px;
+    background-color: #0F6292;
+    animation: progress-animation 2s linear infinite;
+}
+
+@keyframes progress-animation {
+    0% { width: 0; }
+    100% { width: 100%; }
+}
+
+.done-popup {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    opacity: 0;
+    animation: popup-animation 0.5s forwards;
+}
+
+@keyframes popup-animation {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
 }
