@@ -12,6 +12,35 @@ router.get('/', async (req, res) => {
     }
 });
 
+// DELETE all charges (Purge all)
+router.delete('/purge', async (req, res) => {
+    try {
+        await Charge.deleteMany(); // Deletes all documents in the charges collection
+        res.json({ message: 'All charges purged' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// DELETE a specific charge by ID
+router.delete('/:id', async (req, res) => {
+    try {
+        const deletedCharge = await Charge.findByIdAndDelete(req.params.id); // Updated deletion method
+        if (!deletedCharge) {
+            return res.status(404).json({ message: 'Charge not found' });
+        }
+        res.json({ message: 'Charge deleted' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+
+
+
+
+
+
 // POST a new charge
 router.post('/', async (req, res) => {
     const { charges, amount, category, payee, payment_type, date, time } = req.body;

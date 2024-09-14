@@ -62,8 +62,16 @@ router.post('/process-data', async (req, res) => {
         if (!filteredData) {
             return res.status(400).json({ error: 'No filtered data provided' });
         }
+        const prompt =
+        `
+        This data is a list of charges extracted from a bunch of receipts. 
+        Please go through this data and analyze the spending patterns. 
+        Ommit information that is not complete enough for your analysis.
+        Please note that quantities for grocery items would most likely be in kilo grams. please assume the logical option when looking at the quantities. Keep an eye out for outliers and ommit them if needed
+        Provide insights into spending patterns and suggest potential areas for savings. Do not go into detail, or mention the items you omitted. keep this as natural as possible
+        Limit to 100 words.
+        `;
 
-        const prompt = 'Kindly go through the attached data and provide a recommendation to mitigate expenses.make it a single paragraph and less than 100 words.';
         const textInput = `${prompt}\n\n${JSON.stringify(filteredData, null, 2)}`; // Convert to JSON string
 
         // Use the Gemini model

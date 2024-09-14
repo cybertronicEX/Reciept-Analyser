@@ -9,7 +9,7 @@ const ChargesTable = () => {
     const [showFilters, setShowFilters] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [chargesData, setChargesData] = useState([]);
-    const [categories, setCategories] = useState([]); // State for categories
+    const [categories, setCategories] = useState([]);
     const itemsPerPage = 10;
 
     // Fetch charges and categories from the backend
@@ -33,8 +33,30 @@ const ChargesTable = () => {
         };
 
         fetchChargesData();
-        fetchCategories(); // Fetch categories on component mount
+        fetchCategories();
     }, []);
+
+    // Delete a single charge
+    const handleDeleteCharge = async (id) => {
+        try {
+            await axios.delete(`https://reciept-analyser.vercel.app/api/charges/${id}`);
+            setChargesData(chargesData.filter((charge) => charge._id !== id)); // Update state
+        } catch (error) {
+            console.error('Error deleting charge:', error);
+            alert('Failed to delete charge. Please try again.');
+        }
+    };
+
+    // Purge all charges
+    const handlePurgeAll = async () => {
+        try {
+            await axios.delete('https://reciept-analyser.vercel.app/api/charges/purge');
+            setChargesData([]); // Clear the table after purging
+        } catch (error) {
+            console.error('Error purging charges:', error);
+            alert('Failed to purge data. Please try again.');
+        }
+    };
 
     // Handle global search
     const handleGlobalSearch = (event) => {
@@ -47,9 +69,25 @@ const ChargesTable = () => {
         setFilterValue('');
     };
 
+    const toDateInputValue = (dateString) => {
+        if (!dateString) return '';
+        const [day, month, year] = dateString.split('/');
+        return `${year}-${month}-${day}`; // Convert to `yyyy-mm-dd` format
+    };
+    
+    const fromDateInputValue = (dateString) => {
+        if (!dateString) return '';
+        const [year, month, day] = dateString.split('-');
+        return `${day}/${month}/${year}`; // Convert to `dd/mm/yyyy` format
+    };
+    
     // Handle column filter value changes
     const handleFilterValueChange = (event) => {
-        setFilterValue(event.target.value);
+        const value = event.target.value;
+        setFilterValue(value);
+        if (activeFilter === 'date') {
+            setFilterValue(fromDateInputValue(value));
+        }
     };
 
     // Filter data based on global search and selected filter
@@ -143,10 +181,10 @@ const ChargesTable = () => {
         } else if (activeFilter === 'date') {
             return (
                 <input
-                    type="date"
-                    value={filterValue}
-                    onChange={handleFilterValueChange}
-                />
+                type="date"
+                value={toDateInputValue(filterValue)}
+                onChange={handleFilterValueChange}
+            />
             );
         }
 
@@ -155,9 +193,8 @@ const ChargesTable = () => {
 
     return (
         <div className="table-container">
-            <h2 className='h2'>Charges Table</h2>
+            <h2 className="h2">Charges Table</h2>
             <div className="table-component-container">
-                {/* Global Search */}
                 <div className="global-search">
                     <input
                         type="text"
@@ -171,7 +208,6 @@ const ChargesTable = () => {
                     </button>
                 </div>
 
-                {/* Filter Options (conditionally rendered) */}
                 {showFilters && (
                     <div className="filter-container">
                         <div className="filter-selection">
@@ -218,7 +254,6 @@ const ChargesTable = () => {
                                 /> Date
                             </label>
                         </div>
-                        {/* Show filter input based on selected column */}
                         {activeFilter && (
                             <div className="filter-input">
                                 {renderFilterInput()}
@@ -227,7 +262,6 @@ const ChargesTable = () => {
                     </div>
                 )}
 
-                {/* Charges Table */}
                 <table className="charges-table">
                     <thead>
                         <tr>
@@ -238,8 +272,9 @@ const ChargesTable = () => {
                             <th>Payment Type</th>
                             <th>Date</th>
                             <th>Time</th>
-                            <th>Receipt ID</th> {/* New Column */}
-                            <th>Receipt Ref No</th> {/* New Column */}
+                            <th>Receipt ID</th>
+                            <th>Receipt Ref No</th>
+                            <th>Action</th> {/* Action Column */}
                         </tr>
                     </thead>
                     <tbody>
@@ -252,14 +287,21 @@ const ChargesTable = () => {
                                 <td>{row.payment_type}</td>
                                 <td>{row.date}</td>
                                 <td>{row.time}</td>
-                                <td>{row.receipt_id}</td> {/* New Data */}
-                                <td>{row.receipt_ref_no}</td> {/* New Data */}
+                                <td>{row.receipt_id}</td>
+                                <td>{row.receipt_ref_no}</td>
+                                <td>
+                                    <button className="purge-all" onClick={() => handleDeleteCharge(row._id)}>Delete</button> {/* Delete Button */}
+                                </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
 
-                {/* Pagination Controls */}
+                {/* Purge All Button */}
+                <div >
+                    <button className="purge-all" onClick={handlePurgeAll}>Purge All Data</button>
+                </div>
+
                 <div className="pagination-controls">
                     <button onClick={handlePreviousPage} disabled={currentPage === 1}>
                         Previous
