@@ -8,7 +8,7 @@ const categoryRoutes = require('./routes/Categories');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const app = express();
-// const PORT = 5001;
+const PORT = 5001;
 
 // Middleware
 app.use(cors());
@@ -28,4 +28,7 @@ app.use('/api/ai', aiapiRoutes);
 
 
 
-module.exports = app;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});

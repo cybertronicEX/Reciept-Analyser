@@ -16,7 +16,7 @@ const ChargesTable = () => {
     useEffect(() => {
         const fetchChargesData = async () => {
             try {
-                const response = await axios.get('https://reciept-analyser.vercel.app/api/charges');
+                const response = await axios.get('http://localhost:5001/api/charges');
                 setChargesData(response.data);
             } catch (error) {
                 console.error('Error fetching charges data:', error);
@@ -25,7 +25,7 @@ const ChargesTable = () => {
 
         const fetchCategories = async () => {
             try {
-                const response = await axios.get('https://reciept-analyser.vercel.app/api/categories'); // Replace with your backend endpoint
+                const response = await axios.get('http://localhost:5001/api/categories'); // Replace with your backend endpoint
                 setCategories(response.data); // Assuming the API returns an array of categories
             } catch (error) {
                 console.error('Error fetching categories:', error);
@@ -39,7 +39,7 @@ const ChargesTable = () => {
     // Delete a single charge
     const handleDeleteCharge = async (id) => {
         try {
-            await axios.delete(`https://reciept-analyser.vercel.app/api/charges/${id}`);
+            await axios.delete(`http://localhost:5001/api/charges/${id}`);
             setChargesData(chargesData.filter((charge) => charge._id !== id)); // Update state
         } catch (error) {
             console.error('Error deleting charge:', error);
@@ -50,7 +50,7 @@ const ChargesTable = () => {
     // Purge all charges
     const handlePurgeAll = async () => {
         try {
-            await axios.delete('https://reciept-analyser.vercel.app/api/charges/purge');
+            await axios.delete('http://localhost:5001/api/charges/purge');
             setChargesData([]); // Clear the table after purging
         } catch (error) {
             console.error('Error purging charges:', error);

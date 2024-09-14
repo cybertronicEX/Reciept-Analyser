@@ -66,7 +66,7 @@ const UploadReceipt = () => {
         });
 
         try {
-            const response = await fetch('https://reciept-analyser.vercel.app/api/ai/upload', {
+            const response = await fetch('http://localhost:5001/api/ai/upload', {
                 method: 'POST',
                 body: formData,
             });
@@ -96,7 +96,7 @@ const UploadReceipt = () => {
     const saveCharges = async (charges) => {
         try {
 
-            const response = await axios.post('https://reciept-analyser.vercel.app/api/charges/bulk', charges);
+            const response = await axios.post('http://localhost:5001/api/charges/bulk', charges);
             console.log('Charges saved:', response.data);
             setShowDone(true)
         } catch (error) {

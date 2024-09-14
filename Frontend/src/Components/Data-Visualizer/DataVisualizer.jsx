@@ -20,7 +20,7 @@ const DataVisualizationPage = () => {
         // Fetch data from the backend API
         const fetchData = async () => {
             try {
-                const response = await axios.get('https://reciept-analyser.vercel.app/api/charges');
+                const response = await axios.get('http://localhost:5001/api/charges');
                 setData(response.data);
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -55,7 +55,7 @@ const DataVisualizationPage = () => {
         try {
             setLoadingRecommendation(true); // Start loading
 
-            const response = await axios.post('https://reciept-analyser.vercel.app/api/ai/process-data', { filteredData });
+            const response = await axios.post('http://localhost:5001/api/ai/process-data', { filteredData });
 
             // Display response data
             if (response && response.data) {
