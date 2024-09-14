@@ -129,18 +129,18 @@ const DataVisualizationPage = () => {
                     placeholderText="End Date"
                     maxDate={today}
                 />
-                <button onClick={processFilteredData} disabled={!startDate || !endDate}>Generate Recommendation</button>
+                <button onClick={processFilteredData} disabled={!startDate || !endDate}>Analyze</button>
             </div>
             <div className='suggestions'>
                 {loadingRecommendation ? (
                     <div className="loading-screen">
                         <div className="spinner"></div>
-                        <p>Loading recommendation...</p>
+                        <p>Analyzing...</p>
                     </div>
                 ) : (
                     apiResponse && (
                         <div className="api-response">
-                            <h3>Recommendation</h3>
+                            <h3>Our Findings...</h3>
                             <pre>{JSON.stringify(apiResponse, null, 2)}</pre>
                         </div>
                     )
@@ -159,7 +159,7 @@ const DataVisualizationPage = () => {
                     </div>
 
                     <div className="chart-container">
-                        <h3>Repetitive Payments</h3>
+                        <h3>Who took your money?</h3>
                         <Pie data={repetitivePaymentsChartData} options={{ responsive: true }} />
                     </div>
                 </>
