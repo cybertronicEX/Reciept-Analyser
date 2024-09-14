@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const chargesRoutes = require('./routes/charges');
+const chargesRoutes = require('./routes/Charges');
 const aiapiRoutes = require('./routes/Aiapi');
 const categoryRoutes = require('./routes/Categories');
 
