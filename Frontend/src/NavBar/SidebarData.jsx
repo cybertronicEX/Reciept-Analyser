@@ -12,23 +12,23 @@ export const SidebarData = [
     },
   
     {
-        title: 'Receipt Uplaoder',
+        title: 'Receipt Uploader',
         path: '/ReceiptUploader',
-        icon: <AiIcons.AiFillHome />,
+        icon: <AiIcons.AiFillPicture  />,
         cName: 'nav-text'
     },
   
     {
         title: 'Charges Table',
         path: '/ChargesTable',
-        icon: <AiIcons.AiFillHome />,
+        icon: <AiIcons.AiOutlineTable  />,
         cName: 'nav-text'
     },
 
     {
         title: 'Data Visualizer',
         path: '/DataVisualizer',
-        icon: <AiIcons.AiFillHome />,
+        icon: <AiIcons.AiFillPieChart />,
         cName: 'nav-text'
     },
 // enter ur page routes here with titles and icons for it to display on nav bar
