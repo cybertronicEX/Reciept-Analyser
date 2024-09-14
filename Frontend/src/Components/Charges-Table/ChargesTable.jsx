@@ -16,7 +16,7 @@ const ChargesTable = () => {
     useEffect(() => {
         const fetchChargesData = async () => {
             try {
-                const response = await axios.get('http://localhost:5001/api/charges');
+                const response = await axios.get('https://reciept-analyser.vercel.app/api/charges');
                 setChargesData(response.data);
             } catch (error) {
                 console.error('Error fetching charges data:', error);
@@ -25,7 +25,7 @@ const ChargesTable = () => {
 
         const fetchCategories = async () => {
             try {
-                const response = await axios.get('http://localhost:5001/api/categories'); // Replace with your backend endpoint
+                const response = await axios.get('https://reciept-analyser.vercel.app/api/categories'); // Replace with your backend endpoint
                 setCategories(response.data); // Assuming the API returns an array of categories
             } catch (error) {
                 console.error('Error fetching categories:', error);
