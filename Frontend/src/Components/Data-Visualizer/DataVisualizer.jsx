@@ -32,12 +32,17 @@ const DataVisualizationPage = () => {
         fetchData();
     }, []);
 
+    const parseDate = (dateString) => {
+        const [day, month, year] = dateString.split('/');
+        return new Date(`${year}-${month}-${day}`);
+    };
+
     // Filter the data by date range
     const filterDataByDateRange = () => {
         if (!startDate || !endDate) return data;
 
         return data.filter((item) => {
-            const itemDate = new Date(item.date);
+            const itemDate = parseDate(item.date); // Use parsed date here
             return itemDate >= startDate && itemDate <= endDate;
         });
     };
@@ -101,6 +106,40 @@ const DataVisualizationPage = () => {
                     'rgba(255, 206, 86, 0.6)',
                     'rgba(75, 192, 192, 0.6)',
                     'rgba(153, 102, 255, 0.6)',
+                    'rgba(255, 159, 64, 0.6)',
+                    'rgba(199, 199, 199, 0.6)',
+                ],
+            },
+        ],
+    };
+
+
+    // Prepare data for Spending Categories (Total amount per category)
+    const categoryData = filteredData.reduce((acc, item) => {
+        const found = acc.find((i) => i.category === item.category);
+        if (found) {
+            found.amount += item.amount;
+        } else {
+            acc.push({ category: item.category, amount: item.amount });
+        }
+        return acc;
+    }, []);
+
+    // Prepare data for the Spending by Category pie chart
+    const categoryChartData = {
+        labels: categoryData.map((item) => item.category),
+        datasets: [
+            {
+                label: 'Spending by Category',
+                data: categoryData.map((item) => item.amount),
+                backgroundColor: [
+                    'rgba(255, 159, 64, 0.6)',
+                    'rgba(199, 199, 199, 0.6)',
+                    'rgba(153, 102, 255, 0.6)',
+                    'rgba(75, 192, 192, 0.6)',
+                    'rgba(255, 206, 86, 0.6)',
+                    'rgba(54, 162, 235, 0.6)',
+                    'rgba(255, 99, 132, 0.6)',
                 ],
             },
         ],
@@ -158,9 +197,16 @@ const DataVisualizationPage = () => {
                         <Line data={expensesData} options={{ responsive: true }} />
                     </div>
 
-                    <div className="chart-container">
-                        <h3>Who took your money?</h3>
-                        <Pie data={repetitivePaymentsChartData} options={{ responsive: true }} />
+                    <div className="chart-container-pie">
+                        <div>
+                            <h3>Who took your money?</h3>
+                            <Pie data={repetitivePaymentsChartData} options={{ responsive: true }} />
+                        </div>
+
+                        <div>
+                            <h3>Spending by Category</h3>
+                            <Pie data={categoryChartData} options={{ responsive: true }} />
+                        </div>
                     </div>
                 </>
             )}

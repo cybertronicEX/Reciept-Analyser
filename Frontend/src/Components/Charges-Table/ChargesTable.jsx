@@ -39,7 +39,7 @@ const ChargesTable = () => {
     // Delete a single charge
     const handleDeleteCharge = async (id) => {
         try {
-            await axios.delete(`http://localhost:5001/api/charges/${id}`);
+            await axios.delete(`https://reciept-analyser.vercel.app/api/charges/${id}`);
             setChargesData(chargesData.filter((charge) => charge._id !== id)); // Update state
         } catch (error) {
             console.error('Error deleting charge:', error);
@@ -50,7 +50,7 @@ const ChargesTable = () => {
     // Purge all charges
     const handlePurgeAll = async () => {
         try {
-            await axios.delete('http://localhost:5001/api/charges/purge');
+            await axios.delete('https://reciept-analyser.vercel.app/api/charges/purge');
             setChargesData([]); // Clear the table after purging
         } catch (error) {
             console.error('Error purging charges:', error);
