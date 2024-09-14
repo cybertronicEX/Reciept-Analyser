@@ -69,9 +69,25 @@ const ChargesTable = () => {
         setFilterValue('');
     };
 
+    const toDateInputValue = (dateString) => {
+        if (!dateString) return '';
+        const [day, month, year] = dateString.split('/');
+        return `${year}-${month}-${day}`; // Convert to `yyyy-mm-dd` format
+    };
+    
+    const fromDateInputValue = (dateString) => {
+        if (!dateString) return '';
+        const [year, month, day] = dateString.split('-');
+        return `${day}/${month}/${year}`; // Convert to `dd/mm/yyyy` format
+    };
+    
     // Handle column filter value changes
     const handleFilterValueChange = (event) => {
-        setFilterValue(event.target.value);
+        const value = event.target.value;
+        setFilterValue(value);
+        if (activeFilter === 'date') {
+            setFilterValue(fromDateInputValue(value));
+        }
     };
 
     // Filter data based on global search and selected filter
@@ -165,10 +181,10 @@ const ChargesTable = () => {
         } else if (activeFilter === 'date') {
             return (
                 <input
-                    type="date"
-                    value={filterValue}
-                    onChange={handleFilterValueChange}
-                />
+                type="date"
+                value={toDateInputValue(filterValue)}
+                onChange={handleFilterValueChange}
+            />
             );
         }
 
@@ -274,7 +290,7 @@ const ChargesTable = () => {
                                 <td>{row.receipt_id}</td>
                                 <td>{row.receipt_ref_no}</td>
                                 <td>
-                                    <button onClick={() => handleDeleteCharge(row._id)}>Delete</button> {/* Delete Button */}
+                                    <button className="purge-all" onClick={() => handleDeleteCharge(row._id)}>Delete</button> {/* Delete Button */}
                                 </td>
                             </tr>
                         ))}
@@ -282,8 +298,8 @@ const ChargesTable = () => {
                 </table>
 
                 {/* Purge All Button */}
-                <div className="purge-all">
-                    <button onClick={handlePurgeAll}>Purge All Data</button>
+                <div >
+                    <button className="purge-all" onClick={handlePurgeAll}>Purge All Data</button>
                 </div>
 
                 <div className="pagination-controls">
