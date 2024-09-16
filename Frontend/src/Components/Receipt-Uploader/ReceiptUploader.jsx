@@ -7,29 +7,28 @@ const UploadReceipt = () => {
     const [uploadedImages, setUploadedImages] = useState([]);
     const [textInput, setTextInput] = useState('');
     const [geminiResponse, setGeminiResponse] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);  
-    const [showDone, setShowDone] = useState(false);  
-    const [isModalOpen, setIsModalOpen] = useState(false); 
-    const [isError, setIsError] = useState(false);  
+    const [isLoading, setIsLoading] = useState(false);
+    const [showDone, setShowDone] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isError, setIsError] = useState(false);
 
     const instructions =
         `the following is text extracted from a bunch of receipts. ONLY reply to the following in JSON. create the body of an API post request, in JSON format, as follows:
-            {
-            "charges": String,
-            "amount": number,
-            "category": String,
-            "payee": String,
-            "payment_type": String,
-            "date": String,
-            "time": String,
-            "receipt_id": String,
-            "receipt_ref_no": String,
-            "qty": number
-            }
-            make sure the date is in formate dd/mm/yyyy if year isnt known, assume its 2024 always. receipt_id should be a generated simple unique ID for the receipt using timestamp. For one receipt there can only be 1 receipt_Id and receipt_ref_no should be the unique Id of the receipt given by the shop. it may be referred as 'No.','receipt','Invoice','ref', etc..
-            Each billed item of the receipt should be added as one record. Additionally, qty should mean quantity of the item, category should be one of the following "Utilities","Food & Beverages", "Transport", "Entertainment", "Healthcare","Education",Housing","Clothing","Personal Care","Travel", "Grocery","Electronics","Dining out","Fitness","Miscellaneous","Savings","Investment","Gifts","Subscriptions","Taxes" . If any of the information is not available, set it to null. Additionally, convert prices to LKR according to whatever data you have. this doesnt have to be accurate. Here are the receipts (could be text extracted from one or more):
+        {
+        "charges": String,
+        "amount": number,
+        "category": String,
+        "payee": String,
+        "payment_type": String,
+        "date": String,
+        "time": String,
+        "receipt_id": String,
+        "receipt_ref_no": String,
+        "qty": number
+        }
+        make sure the date is in format dd/mm/yyyy if year isnt known, assume its 2024 always. receipt_id should be a generated simple unique ID for the receipt using timestamp. For one receipt there can only be 1 receipt_Id and receipt_ref_no should be the unique Id of the receipt given by the shop. 
+        Each billed item of the receipt should be added as one record. Additionally, qty should mean quantity of the item, category should be one of the following "Utilities","Food & Beverages", "Transport", "Entertainment", "Healthcare","Education","Housing","Clothing","Personal Care","Travel", "Grocery","Electronics","Dining out","Fitness","Miscellaneous","Savings","Investment","Gifts","Subscriptions","Taxes". If any of the information is not available, set it to null. Additionally, convert prices to LKR according to whatever data you have. Here are the receipts (could be text extracted from one or more):
         `;
-
 
     const onDrop = useCallback((acceptedFiles) => {
         if (acceptedFiles.length + uploadedImages.length > 5) {
@@ -55,9 +54,9 @@ const UploadReceipt = () => {
             return;
         }
 
-        setIsLoading(true);  
-        setIsError(false); 
-        setIsModalOpen(true); 
+        setIsLoading(true);
+        setIsError(false);
+        setIsModalOpen(true);
 
         const formData = new FormData();
         formData.append('text', instructions + textInput);
@@ -66,23 +65,20 @@ const UploadReceipt = () => {
         });
 
         try {
-            const response = await fetch('https://reciept-analyser.vercel.app/api/ai/upload', {
-                method: 'POST',
-                body: formData,
+            const response = await axios.post('https://reciept-analyser.vercel.app/api/ai/upload', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                timeout: 60000 // Set timeout to 30 seconds
             });
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            setGeminiResponse(data); 
-            setIsLoading(false); 
+            setGeminiResponse(response.data);
+            setIsLoading(false);
 
         } catch (error) {
             console.error('Error submitting the images and text:', error);
             setIsLoading(false);
-            setIsError(true); 
+            setIsError(true);
         }
     };
 
@@ -95,7 +91,6 @@ const UploadReceipt = () => {
 
     const saveCharges = async (charges) => {
         try {
-
             const response = await axios.post('https://reciept-analyser.vercel.app/api/charges/bulk', charges);
             console.log('Charges saved:', response.data);
             setShowDone(true)
@@ -108,9 +103,10 @@ const UploadReceipt = () => {
             }, 3000);
         }
     };
+
     return (
         <div className="upload-container">
-           <h2 className='h2'>Receipt Uploader</h2>
+            <h2 className='h2'>Receipt Uploader</h2>
             <div {...getRootProps()} className={`dropzone ${isDragActive ? 'active' : ''}`}>
                 <input {...getInputProps()} />
                 {
@@ -123,14 +119,11 @@ const UploadReceipt = () => {
                             ))}
                         </div>
                     ) : (
-                        isDragActive ?
-                            <p>Drop the files here...</p> :
-                            <p>Drag 'n' drop up to 5 images here, or click to select files</p>
+                        isDragActive ? <p>Drop the files here...</p> : <p>Drag 'n' drop up to 5 images here, or click to select files</p>
                     )
                 }
             </div>
 
-            {/* Text input and buttons displayed only when there are uploaded images */}
             {uploadedImages.length > 0 && (
                 <div>
                     <textarea
@@ -148,16 +141,12 @@ const UploadReceipt = () => {
                 </div>
             )}
 
-
-            {/* Done popup notification */}
             {showDone && <div className="done-popup">Successfully Added!</div>}
 
-            {/* Instructions for users */}
             <div className="instructions">
                 <p>You can upload images of your receipts here. The AI system will analyze them.</p>
             </div>
 
-            {/* Modal for showing loading, error, or results */}
             {isModalOpen && (
                 <div className="modal">
                     <div className="modal-content">
@@ -167,7 +156,7 @@ const UploadReceipt = () => {
                                 <div className="progress-bar"><div className="progress" /></div>
                             </>
                         ) : isError ? (
-                            <p className="error-message">An error occurred while processing the receipts. Please try again.</p>
+                            <p className="error-message">An error occurred while processing the receipts. Please Make sure the Receipt is Clearly readable priror to uplaoding.</p>
                         ) : (
                             geminiResponse && Array.isArray(geminiResponse) && (
                                 <div className="gemini-response-container">
@@ -207,13 +196,12 @@ const UploadReceipt = () => {
                                 </div>
                             )
                         )}
-                        {isLoading === false && (
+                        {!isLoading && (
                             <>
                                 <button className="close-modal" onClick={() => setIsModalOpen(false)}>Close</button>
-                                <button className="submit-btn" style={{ marginTop: '10px' }} onClick={() => saveCharges(geminiResponse)}>Add to Database</button>
+                                {!isError && (<button className="submit-btn" style={{ marginTop: '10px' }} onClick={() => saveCharges(geminiResponse)}>Add to Database</button>)}
                             </>
                         )}
-
                     </div>
                 </div>
             )}
