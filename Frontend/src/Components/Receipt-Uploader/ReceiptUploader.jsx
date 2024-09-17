@@ -1,90 +1,22 @@
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
+import { Link } from 'react-router-dom';
 import './ReceiptUploader.css';
-import axios from 'axios';
+import { Line } from 'react-chartjs-2';
 
 const UploadReceipt = () => {
     const [uploadedImages, setUploadedImages] = useState([]);
-    const [textInput, setTextInput] = useState('');
-    const [geminiResponse, setGeminiResponse] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);  
-    const [showDone, setShowDone] = useState(false);  
-    const [isModalOpen, setIsModalOpen] = useState(false); 
-    const [isError, setIsError] = useState(false);  
-
-    const instructions =
-        `the following is text extracted from a bunch of receipts. ONLY reply to the following in JSON. create the body of an API post request, in JSON format, as follows:
-            {
-            "charges": String,
-            "amount": number,
-            "category": String,
-            "payee": String,
-            "payment_type": String,
-            "date": String,
-            "time": String,
-            "receipt_id": String,
-            "receipt_ref_no": String,
-            "qty": number
-            }
-            make sure the date is in formate dd/mm/yyyy if year isnt known, assume its 2024 always. receipt_id should be a generated simple unique ID for the receipt using timestamp. For one receipt there can only be 1 receipt_Id and receipt_ref_no should be the unique Id of the receipt given by the shop. it may be referred as 'No.','receipt','Invoice','ref', etc..
-            Each billed item of the receipt should be added as one record. Additionally, qty should mean quantity of the item, category should be one of the following "Utilities","Food & Beverages", "Transport", "Entertainment", "Healthcare","Education",Housing","Clothing","Personal Care","Travel", "Grocery","Electronics","Dining out","Fitness","Miscellaneous","Savings","Investment","Gifts","Subscriptions","Taxes" . If any of the information is not available, set it to null. Additionally, convert prices to LKR according to whatever data you have. this doesnt have to be accurate. Here are the receipts (could be text extracted from one or more):
-        `;
-
+    const [totalSpent, setTotalSpent] = useState(12345.67); // Example value for the total spent in the last 30 days
+    const [isLoading, setIsLoading] = useState(false);
 
     const onDrop = useCallback((acceptedFiles) => {
-        if (acceptedFiles.length + uploadedImages.length > 5) {
-            alert('You can only upload up to 5 images.');
-            return;
-        }
-
         const filesWithPreview = acceptedFiles.map(file =>
             Object.assign(file, {
                 preview: URL.createObjectURL(file)
             })
         );
         setUploadedImages(prev => [...prev, ...filesWithPreview]);
-    }, [uploadedImages]);
-
-    const handleCancel = () => {
-        setUploadedImages([]);
-    };
-
-    const handleSubmit = async () => {
-        if (uploadedImages.length === 0) {
-            console.log('No images uploaded');
-            return;
-        }
-
-        setIsLoading(true);  
-        setIsError(false); 
-        setIsModalOpen(true); 
-
-        const formData = new FormData();
-        formData.append('text', instructions + textInput);
-        uploadedImages.forEach((image, index) => {
-            formData.append('images', image);
-        });
-
-        try {
-            const response = await fetch('http://localhost:5001/api/ai/upload', {
-                method: 'POST',
-                body: formData,
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            setGeminiResponse(data); 
-            setIsLoading(false); 
-
-        } catch (error) {
-            console.error('Error submitting the images and text:', error);
-            setIsLoading(false);
-            setIsError(true); 
-        }
-    };
+    }, []);
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
@@ -93,32 +25,41 @@ const UploadReceipt = () => {
         maxFiles: 5,
     });
 
-    const saveCharges = async (charges) => {
-        try {
-
-            const response = await axios.post('http://localhost:5001/api/charges/bulk', charges);
-            console.log('Charges saved:', response.data);
-            setShowDone(true)
-        } catch (error) {
-            console.error('Error saving charges:', error);
-        } finally {
-            setIsModalOpen(false);
-            setTimeout(() => {
-                setShowDone(false);
-            }, 3000);
-        }
+    const spendingData = {
+        labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5'],
+        datasets: [
+            {
+                label: 'Amount Spent (LKR)',
+                data: [2000, 3500, 1500, 4000, 3000],
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1,
+            },
+        ],
     };
+
     return (
-        <div className="upload-container">
-           <h2 className='h2'>Receipt Uploader</h2>
-            <div {...getRootProps()} className={`dropzone ${isDragActive ? 'active' : ''}`}>
+        <div className="min-h-screen p-6 bg-gray-100">
+            {/* Header with Navigation */}
+            <header className="flex justify-between items-center py-4">
+                <h2 className="text-3xl font-bold text-blue-800">Receipt Uploader</h2>
+                <nav>
+                    <Link to="/ChargesTable" className="text-blue-600 hover:text-blue-800 mx-2">Charges Table</Link>
+                    <Link to="/DataVisualizer" className="text-blue-600 hover:text-blue-800 mx-2">Data Visualizer</Link>
+                    <Link to="/Dashboard" className="text-blue-600 hover:text-blue-800 mx-2">Dashboard</Link>
+                    <Link to="/Settings" className="text-blue-600 hover:text-blue-800 mx-2">Settings</Link>
+                </nav>
+            </header>
+    
+            {/* Receipt Uploader Section */}
+            <div {...getRootProps()} className={`border-2 border-dashed p-6 text-center rounded-lg ${isDragActive ? 'bg-blue-50 border-blue-400' : 'bg-white border-gray-300'}`}>
                 <input {...getInputProps()} />
                 {
                     uploadedImages.length > 0 ? (
-                        <div className="preview-container">
+                        <div className="grid grid-cols-2 gap-4 mt-4">
                             {uploadedImages.map((file, index) => (
-                                <div key={index} className="image-preview">
-                                    <img src={file.preview} alt={`preview-${index}`} />
+                                <div key={index} className="overflow-hidden rounded-lg">
+                                    <img src={file.preview} alt={`preview-${index}`} className="object-cover h-48 w-full" />
                                 </div>
                             ))}
                         </div>
@@ -129,96 +70,67 @@ const UploadReceipt = () => {
                     )
                 }
             </div>
-
-            {/* Text input and buttons displayed only when there are uploaded images */}
-            {uploadedImages.length > 0 && (
-                <div>
-                    <textarea
-                        value={textInput}
-                        onChange={(e) => setTextInput(e.target.value)}
-                        placeholder="Please enter any additional data to the uploaded receipts"
-                        className="text-input"
-                    />
-                    <div className="button-container">
-                        <button className="cancel-btn" onClick={handleCancel}>Cancel</button>
-                        <button className="submit-btn" onClick={handleSubmit} disabled={isLoading}>
-                            {isLoading ? 'Submitting...' : 'Submit'}
-                        </button>
+    
+            {/* Visual Summary Section */}
+            <div className="mt-8">
+                <h3 className="text-2xl font-bold text-gray-800 mb-4">Summary</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    {/* Uploaded Receipts Summary */}
+                    <div className="bg-white p-4 rounded-lg shadow-md">
+                        <h4 className="text-xl font-semibold text-gray-800">Uploaded Receipts</h4>
+                        <p className="text-gray-600">You have uploaded 4 receipts.</p> {/* Updated to show 4 receipts */}
+                    </div>
+    
+                    {/* Spending in Last 30 Days */}
+                    <div className="bg-white p-4 rounded-lg shadow-md">
+                        <h4 className="text-xl font-semibold text-gray-800">Total Spend in Last 30 Days</h4>
+                        <p className="text-2xl font-bold text-green-600">LKR 12,345.67</p>
                     </div>
                 </div>
-            )}
-
-
-            {/* Done popup notification */}
-            {showDone && <div className="done-popup">Successfully Added!</div>}
-
-            {/* Instructions for users */}
-            <div className="instructions">
-                <p>You can upload images of your receipts here. The AI system will analyze them.</p>
+                {/* Spending Visualization */}
+                <div className="bg-white p-6 rounded-lg shadow-md mt-8">
+                    <h4 className="text-xl font-semibold text-gray-800 mb-4">Spending Trend</h4>
+                    <div className="h-64"> {/* Adjusted height */}
+                        <Line
+                            data={{
+                                labels: ["01/08/2024", "02/08/2024", "03/08/2024", "04/08/2024", "05/08/2024"],  // Sample dates
+                                datasets: [{
+                                    label: 'Amount Spent (LKR)',
+                                    data: [2000, 3500, 1500, 3800, 3000],  // Sample amounts
+                                    borderColor: 'rgba(75, 192, 192, 1)',
+                                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                    fill: true,
+                                }],
+                            }}
+                            options={{
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                scales: {
+                                    x: {
+                                        type: 'category',
+                                        title: {
+                                            display: true,
+                                            text: 'Date'
+                                        }
+                                    },
+                                    y: {
+                                        beginAtZero: true,
+                                        title: {
+                                            display: true,
+                                            text: 'Amount (LKR)'
+                                        }
+                                    }
+                                }
+                            }}
+                        />
+                    </div>
+                </div>
             </div>
-
-            {/* Modal for showing loading, error, or results */}
-            {isModalOpen && (
-                <div className="modal">
-                    <div className="modal-content">
-                        {isLoading ? (
-                            <>
-                                <p>Loading, please wait...</p>
-                                <div className="progress-bar"><div className="progress" /></div>
-                            </>
-                        ) : isError ? (
-                            <p className="error-message">An error occurred while processing the receipts. Please try again.</p>
-                        ) : (
-                            geminiResponse && Array.isArray(geminiResponse) && (
-                                <div className="gemini-response-container">
-                                    <h3>Receipt Details:</h3>
-                                    <table className="response-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Charges</th>
-                                                <th>Amount</th>
-                                                <th>Category</th>
-                                                <th>Payee</th>
-                                                <th>Payment Type</th>
-                                                <th>Date</th>
-                                                <th>Time</th>
-                                                <th>Receipt ID</th>
-                                                <th>Receipt Ref No</th>
-                                                <th>Quantity</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {geminiResponse.map((item, index) => (
-                                                <tr key={index}>
-                                                    <td>{item.charges}</td>
-                                                    <td>{item.amount}</td>
-                                                    <td>{item.category}</td>
-                                                    <td>{item.payee}</td>
-                                                    <td>{item.payment_type || 'N/A'}</td>
-                                                    <td>{item.date}</td>
-                                                    <td>{item.time}</td>
-                                                    <td>{item.receipt_id}</td>
-                                                    <td>{item.receipt_ref_no || 'N/A'}</td>
-                                                    <td>{item.qty}</td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            )
-                        )}
-                        {isLoading === false && (
-                            <>
-                                <button className="close-modal" onClick={() => setIsModalOpen(false)}>Close</button>
-                                <button className="submit-btn" style={{ marginTop: '10px' }} onClick={() => saveCharges(geminiResponse)}>Add to Database</button>
-                            </>
-                        )}
-
-                    </div>
-                </div>
-            )}
         </div>
     );
+    
+    
+    
 };
 
 export default UploadReceipt;

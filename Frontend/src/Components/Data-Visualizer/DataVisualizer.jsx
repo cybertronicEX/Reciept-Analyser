@@ -146,72 +146,89 @@ const DataVisualizationPage = () => {
     };
 
     return (
-        <div className="data-visualization-container">
-            <h2>Data Visualization</h2>
-
-            <div className="date-range-picker">
-                <DatePicker
-                    selected={startDate}
-                    onChange={(date) => setStartDate(date)}
-                    selectsStart
-                    startDate={startDate}
-                    endDate={endDate}
-                    placeholderText="Start Date"
-                    maxDate={today}
-                />
-                <DatePicker
-                    selected={endDate}
-                    onChange={(date) => setEndDate(date)}
-                    selectsEnd
-                    startDate={startDate}
-                    endDate={endDate}
-                    placeholderText="End Date"
-                    maxDate={today}
-                />
-                <button onClick={processFilteredData} disabled={!startDate || !endDate}>Analyze</button>
+        <div className="content-container">
+            <div className="background-blur"></div>
+            <div className="min-h-screen p-6">
+                <div className="max-w-6xl mx-auto">
+    
+                    <div className="bg-white p-6 rounded-lg shadow-md mb-8 text-center">
+                        <h3 className="text-2xl font-semibold text-gray-800 mb-4">Analyze Your Spending</h3>
+                        <p className="text-gray-600 mb-6">
+                            Pick your dates, hit "Analyze," and let our AI suggest ways to save money and spend smarter.
+                        </p>
+                        <div className="flex justify-center items-center flex-wrap gap-4">
+                            <DatePicker
+                                selected={startDate}
+                                onChange={(date) => setStartDate(date)}
+                                selectsStart
+                                startDate={startDate}
+                                endDate={endDate}
+                                placeholderText="Start Date"
+                                maxDate={today}
+                                className="w-40 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                            <DatePicker
+                                selected={endDate}
+                                onChange={(date) => setEndDate(date)}
+                                selectsEnd
+                                startDate={startDate}
+                                endDate={endDate}
+                                placeholderText="End Date"
+                                maxDate={today}
+                                className="w-40 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                            <button 
+                                onClick={processFilteredData} 
+                                disabled={!startDate || !endDate} 
+                                className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                Analyze
+                            </button>
+                        </div>
+                    </div>
+    
+                    {/* Our Findings Section */}
+                    {apiResponse && (
+                        <div className="bg-white p-6 rounded-lg shadow-md mb-8">
+                            <h3 className="text-2xl font-semibold text-gray-800 mb-4">Our Findings...</h3>
+                            <p className="text-gray-600">
+                                {apiResponse}
+                            </p>
+                        </div>
+                    )}
+    
+                    <div className="bg-white p-6 rounded-lg shadow-md mb-8 max-w-full">
+                        <h3 className="text-2xl font-semibold text-gray-800 mb-4">Expenses Over Time</h3>
+                        <div className="relative h-64">
+                            <Line data={expensesData} options={{ responsive: true, maintainAspectRatio: false }} />
+                        </div>
+                    </div>
+    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="bg-white p-6 rounded-lg shadow-md">
+                            <h3 className="text-2xl font-semibold text-gray-800 mb-4">Who Took Your Money?</h3>
+                            <div className="relative h-64">
+                                <Pie data={repetitivePaymentsChartData} options={{ responsive: true, maintainAspectRatio: false }} />
+                            </div>
+                        </div>
+    
+                        <div className="bg-white p-6 rounded-lg shadow-md">
+                            <h3 className="text-2xl font-semibold text-gray-800 mb-4">Spending by Category</h3>
+                            <div className="relative h-64">
+                                <Pie data={categoryChartData} options={{ responsive: true, maintainAspectRatio: false }} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div className='suggestions'>
-                {loadingRecommendation ? (
-                    <div className="loading-screen">
-                        <div className="spinner"></div>
-                        <p>Analyzing...</p>
-                    </div>
-                ) : (
-                    apiResponse && (
-                        <div className="api-response">
-                            <h3>Our Findings...</h3>
-                            <pre>{JSON.stringify(apiResponse, null, 2)}</pre>
-                        </div>
-                    )
-                )}
-            </div>
-            {loading ? (
-                <>
-                    <div className="spinner"></div>
-                    <p>Loading data...</p>
-                </>
-            ) : (
-                <>
-                    <div className="chart-container">
-                        <h3>Expenses Over Time</h3>
-                        <Line data={expensesData} options={{ responsive: true }} />
-                    </div>
-
-                    <div className="chart-container-pie">
-                        <div>
-                            <h3>Who took your money?</h3>
-                            <Pie data={repetitivePaymentsChartData} options={{ responsive: true }} />
-                        </div>
-
-                        <div>
-                            <h3>Spending by Category</h3>
-                            <Pie data={categoryChartData} options={{ responsive: true }} />
-                        </div>
-                    </div>
-                </>
-            )}
         </div>
     );
+    
+    
+    
+    
+    
+    
 };
 
 export default DataVisualizationPage;

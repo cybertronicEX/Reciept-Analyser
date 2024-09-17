@@ -3,10 +3,7 @@ import { IconContext } from 'react-icons';
 import * as AiIcons from 'react-icons/ai';
 import * as FaIcons from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import "./NavBar.css";
 import { SidebarData } from './SidebarData';
-
-
 
 function Navbar() {
   const [sidebar, setSidebar] = useState(false);
@@ -15,38 +12,37 @@ function Navbar() {
   return (
     <>
       <IconContext.Provider value={{ color: '#fff' }}>
-        <div className='Navbar'>
-          <Link to="#" className='menu-bars'>
+        <div className="bg-blue-600 flex items-center justify-between px-4 py-3">
+          <Link to="#" className="text-white text-2xl">
             <FaIcons.FaBars onClick={showSidebar} />
           </Link>
-          <div className='navbar-user'>
+          <div className="text-white text-lg font-semibold">
+            {/* Add any user information or branding here */}
           </div>
         </div>
 
-        <nav className={sidebar ? 'nav-menu active' : 'nav-menu'}>
-          <ul className='nav-menu-items' onClick={showSidebar}>
-            <li className='navbar-toggle'>
-              < Link to='#' className='menu-bars'>
+        <nav className={`fixed top-0 left-0 w-64 h-full bg-blue-800 transition-transform ${sidebar ? 'translate-x-0' : '-translate-x-full'} z-50`}>
+          <ul className="flex flex-col p-4 space-y-4">
+            <li className="flex justify-end">
+              <Link to="#" className="text-white text-2xl" onClick={showSidebar}>
                 <AiIcons.AiOutlineClose />
               </Link>
             </li>
             {SidebarData.map((item, index) => {
               return (
-                <li key={index} className={item.cName}>
-                  <Link to={item.path}>
+                <li key={index} className="flex items-center space-x-4 text-white p-2 hover:bg-blue-700 rounded-md">
+                  <Link to={item.path} className="flex items-center w-full">
                     {item.icon}
-                    <span>
-                      {item.title}
-                    </span>
+                    <span className="ml-4">{item.title}</span>
                   </Link>
                 </li>
-              )
+              );
             })}
           </ul>
         </nav>
       </IconContext.Provider>
     </>
-  )
+  );
 }
 
-export default Navbar
+export default Navbar;

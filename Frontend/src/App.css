@@ -1,80 +1,47 @@
-.App {
-  text-align: center;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: rgb(77,88,110);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-
-*{ 
+body {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-  /* font-family: 'Lato',sans-serif; */
+  font-family: 'Arial', sans-serif;
 }
 
-
-/* .DataExtraction, .Home, .FashionProfiler{
-  display: flex;
-  height: 0vh;
-  align-items: center;
-  justify-content: center;
-  font-size: 3rem;
-} */
-
-.header{
-  display: flex;
-  /* min-width: 3000px; */
+.background-blur {
   position: fixed;
-  z-index: 1;
-  width: 100vw;
-}
-
-.Rname1{
-  /* height: 40px; */
-  color: white;
-  font-size: 30px;
-  text-align: center;
-  font-family: Georgia, 'Times New Roman', Times, serif, cursive ;
-  font-style: italic;
+  top: 0;
+  left: 0;
   width: 100%;
-  background-color: rgb(35, 35, 35);
-
+  height: 100%;
+  background-image: url('https://blog.quickbridge.com/wp-content/uploads/2018/08/small-business-money-management.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  filter: blur(3px); /* Apply a slight blur */
+  z-index: -1; /* Ensure it's behind all other content */
 }
 
-.container{
-  background-color:  rgb(37, 37, 37);
-  height: calc(100vh - 80px);
+.content-container {
+  position: relative;
+  z-index: 2;
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.85); /* Slight background color for content container */
+  border-radius: 10px;
 }
+
+.navbar {
+  position: relative;
+  z-index: 3;
+  background-color: #1d4ed8; /* Ensure the navbar has a solid background */
+  padding: 10px;
+}
+
+h2, h3 {
+  color: #1d4ed8;
+}
+
+.text-center {
+  text-align: center;
+}
+
