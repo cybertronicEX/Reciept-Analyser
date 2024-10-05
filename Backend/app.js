@@ -15,7 +15,7 @@ app.use(cors());
 app.use(express.json());
 
 // Connect to MongoDB
-mongoose.connect('mongodb+srv://receiptAnalyzerAdmin:admin123@receiptanalyzer.31xam.mongodb.net/?retryWrites=true&w=majority&appName=ReceiptAnalyzer', {
+mongoose.connect('mongodb+srv://receiptAnalyzerAdmin:fuckyou123@receiptanalyzer.31xam.mongodb.net/?retryWrites=true&w=majority&appName=ReceiptAnalyzer', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 }).then(() => console.log('Connected to MongoDB'))
@@ -25,7 +25,7 @@ mongoose.connect('mongodb+srv://receiptAnalyzerAdmin:admin123@receiptanalyzer.31
 app.use('/api/charges', chargesRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/ai', aiapiRoutes);
-
+ 
 
 
 module.exports = app;
